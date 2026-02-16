@@ -1,4 +1,4 @@
-"""数据获取模块 - 使用 Tushare Pro"""
+"""数据获取模块 - 使用 Tushare Pro（第三方代理）"""
 
 import os
 import tushare as ts
@@ -8,11 +8,19 @@ import time
 
 # 初始化 Tushare
 TUSHARE_TOKEN = os.environ.get('TUSHARE_TOKEN', '')
-if TUSHARE_TOKEN:
-    ts.set_token(TUSHARE_TOKEN)
-    pro = ts.pro_api()
-else:
-    pro = None
+pro = None
+
+def init_tushare():
+    """初始化 Tushare API（使用第三方代理）"""
+    global pro
+    if not TUSHARE_TOKEN:
+        raise ValueError("TUSHARE_TOKEN 未设置，请设置环境变量")
+    
+    pro = ts.pro_api(TUSHARE_TOKEN)
+    # 配置第三方代理
+    pro._DataApi__token = TUSHARE_TOKEN
+    pro._DataApi__http_url = 'http://lianghua.nanyangqiankun.top'
+    return pro
 
 
 def get_stock_list() -> pd.DataFrame:
@@ -21,8 +29,9 @@ def get_stock_list() -> pd.DataFrame:
     Returns:
         DataFrame with columns: 代码, 名称, 最新价, 涨跌幅
     """
+    global pro
     if pro is None:
-        raise ValueError("TUSHARE_TOKEN 未设置，请设置环境变量")
+        init_tushare()
     
     try:
         # 获取股票基本信息
@@ -35,16 +44,16 @@ def get_stock_list() -> pd.DataFrame:
         # 剔除ST股票
         df = df[~df['name'].str.contains('ST', na=False)]
         
-        # 获取今日行情
-        today = datetime.now().strftime('%Y%m%d')
-        # 如果是周末，取最近交易日
+        # 获取最近交易日行情
+        daily_df = None
         for i in range(7):
             trade_date = (datetime.now() - timedelta(days=i)).strftime('%Y%m%d')
             try:
                 daily_df = pro.daily(trade_date=trade_date)
                 if daily_df is not None and len(daily_df) > 0:
+                    print(f"   获取到 {trade_date} 的行情数据")
                     break
-            except:
+            except Exception as e:
                 continue
         
         if daily_df is None or daily_df.empty:
@@ -77,8 +86,9 @@ def get_stock_history(code: str, days: int = 120) -> pd.DataFrame:
     Returns:
         DataFrame with columns: 日期, 开盘, 收盘, 最高, 最低, 成交量, 成交额, 涨跌幅
     """
+    global pro
     if pro is None:
-        raise ValueError("TUSHARE_TOKEN 未设置")
+        init_tushare()
     
     try:
         # 转换为 Tushare 格式的代码
@@ -141,15 +151,15 @@ def get_all_stocks_history(codes: list, days: int = 120) -> dict:
     
     for i, code in enumerate(codes):
         if (i + 1) % 100 == 0:
-            print(f"进度: {i + 1}/{total}")
+            print(f"   进度: {i + 1}/{total}")
         
         # Tushare 有频率限制，适当延迟
         if i > 0 and i % 50 == 0:
-            time.sleep(1)
+            time.sleep(0.5)
         
         df = get_stock_history(code, days)
         if not df.empty and len(df) >= 30:  # 至少30天数据
             result[code] = df
     
-    print(f"成功获取 {len(result)} 只股票数据")
+    print(f"   成功获取 {len(result)} 只股票数据")
     return result
