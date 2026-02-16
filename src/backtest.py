@@ -1,10 +1,10 @@
-"""回测模块"""
+"""回测模块 - 缩量超卖买点策略"""
 
 from dataclasses import dataclass, field
 from typing import List
 import pandas as pd
 from .indicator import add_all_indicators
-from .strategy import check_trend, check_pullback_pattern, check_buy_signal
+from .strategy import check_buy_signal
 
 
 @dataclass
@@ -61,25 +61,16 @@ def backtest_single(code: str, name: str, df: pd.DataFrame, params: dict,
     df = df[(df['日期'] >= start_date) & (df['日期'] <= end_date)]
     df = df.reset_index(drop=True)
     
-    if len(df) < params['ma_long']:
+    if len(df) < 30:  # 至少需要30天数据
         return trades
     
-    i = params['ma_long']  # 从有足够数据的位置开始
+    i = 30  # 从有足够数据的位置开始
     
     while i < len(df):
         # 获取到当前日期的数据
         current_df = df.iloc[:i+1].copy()
         
         # 检查是否满足买入条件
-        if not check_trend(current_df, params):
-            i += 1
-            continue
-        
-        is_pullback_valid, _, _ = check_pullback_pattern(current_df, params)
-        if not is_pullback_valid:
-            i += 1
-            continue
-        
         is_signal, _ = check_buy_signal(current_df, params)
         if not is_signal:
             i += 1
