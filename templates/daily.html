@@ -27,7 +27,6 @@
                     <th>涨跌幅</th>
                     <th>J值</th>
                     <th>DIFF</th>
-                    <th>回调幅度</th>
                     <th>量比</th>
                     <th class="reason">选择理由</th>
                 </tr>
@@ -41,7 +40,6 @@
                     <td class="{% if '-' in stock['涨跌幅'] %}negative{% else %}positive{% endif %}">{{ stock['涨跌幅'] }}</td>
                     <td class="{% if stock['J值'] < 0 %}negative{% endif %}">{{ stock['J值'] }}</td>
                     <td class="{% if stock['DIFF'] > 0 %}positive{% else %}negative{% endif %}">{{ stock['DIFF'] }}</td>
-                    <td class="negative">{{ stock['回调幅度'] }}</td>
                     <td>{{ stock['量比'] }}</td>
                     <td class="reason">{{ stock['选择理由'] }}</td>
                 </tr>

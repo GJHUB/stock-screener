@@ -1,16 +1,8 @@
-"""参数配置模块"""
+"""参数配置模块 - 缩量超卖买点策略"""
 
 PARAMS = {
-    # 趋势判断
-    "ma_short": 20,           # 短期均线
-    "ma_long": 60,            # 长期均线
-    
-    # 回调判断
-    "lookback_days": 60,      # 回溯天数
-    "pullback_ratio": 0.9,    # 回调不破位比例（90%）
-    
     # 买点信号
-    "volume_ratio": 0.7,      # 缩量阈值（70%）
+    "volume_ratio": 0.7,      # 缩量阈值（当日量/5日均量）
     "j_threshold": 0,         # KDJ J值阈值
     "diff_threshold": 0,      # MACD DIFF阈值
     "change_threshold": 1,    # 涨跌幅阈值（%）
@@ -24,6 +16,9 @@ PARAMS = {
     "macd_fast": 12,
     "macd_slow": 26,
     "macd_signal": 9,
+    
+    # 成交量均线
+    "volume_ma_period": 5,
     
     # 回测参数
     "take_profit": 0.10,      # 止盈比例 10%

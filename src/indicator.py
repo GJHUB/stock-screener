@@ -1,23 +1,7 @@
-"""指标计算模块 - MA/KDJ/MACD"""
+"""指标计算模块 - KDJ/MACD/成交量均线"""
 
 import pandas as pd
 import numpy as np
-
-
-def add_ma(df: pd.DataFrame, periods: list = [5, 20, 60]) -> pd.DataFrame:
-    """计算移动平均线
-    
-    Args:
-        df: 包含 '收盘' 列的 DataFrame
-        periods: 均线周期列表
-        
-    Returns:
-        添加了 MA5, MA20, MA60 等列的 DataFrame
-    """
-    df = df.copy()
-    for period in periods:
-        df[f'MA{period}'] = df['收盘'].rolling(window=period).mean()
-    return df
 
 
 def add_kdj(df: pd.DataFrame, n: int = 9, m1: int = 3, m2: int = 3) -> pd.DataFrame:
@@ -124,9 +108,8 @@ def add_all_indicators(df: pd.DataFrame, params: dict) -> pd.DataFrame:
     Returns:
         添加了所有指标的 DataFrame
     """
-    df = add_ma(df, periods=[5, params['ma_short'], params['ma_long']])
     df = add_kdj(df, n=params['kdj_n'], m1=params['kdj_m1'], m2=params['kdj_m2'])
     df = add_macd(df, fast=params['macd_fast'], slow=params['macd_slow'], signal=params['macd_signal'])
-    df = add_volume_ma(df, period=5)
+    df = add_volume_ma(df, period=params.get('volume_ma_period', 5))
     
     return df
