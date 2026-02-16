@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}历史记录 - 股票日K筛选器{% endblock %}
+{% block subtitle %}历史选股记录{% endblock %}
+{% block css_path %}../assets/style.css{% endblock %}
+{% block index_link %}../index.html{% endblock %}
+{% block backtest_link %}../backtest.html{% endblock %}
+{% block history_link %}index.html{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📅 历史选股记录</h2>
+    {% if dates %}
+    <ul class="history-list">
+        {% for date in dates %}
+        <li>
+            <a href="{{ date }}.html">{{ date }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">
+        <h3>暂无历史记录</h3>
+        <p>选股记录将在每日运行后自动归档</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

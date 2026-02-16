@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}回测报告 - 股票日K筛选器{% endblock %}
+{% block subtitle %}策略回测报告{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📈 回测概览</h2>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{ total_trades }}</div>
+            <div class="stat-label">总交易次数</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ win_rate }}</div>
+            <div class="stat-label">胜率</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ avg_return }}</div>
+            <div class="stat-label">平均收益率</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ cumulative_return }}</div>
+            <div class="stat-label">累计收益率</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📊 绩效指标</h2>
+    <table>
+        <tr>
+            <td>回测区间</td>
+            <td>{{ start_date }} ~ {{ end_date }}</td>
+        </tr>
+        <tr>
+            <td>总交易次数</td>
+            <td>{{ total_trades }}</td>
+        </tr>
+        <tr>
+            <td>胜率</td>
+            <td>{{ win_rate }}</td>
+        </tr>
+        <tr>
+            <td>平均收益率</td>
+            <td>{{ avg_return }}</td>
+        </tr>
+        <tr>
+            <td>最大单笔盈利</td>
+            <td class="positive">{{ max_profit }}</td>
+        </tr>
+        <tr>
+            <td>最大单笔亏损</td>
+            <td class="negative">{{ max_loss }}</td>
+        </tr>
+        <tr>
+            <td>盈亏比</td>
+            <td>{{ profit_loss_ratio }}</td>
+        </tr>
+        <tr>
+            <td>累计收益率</td>
+            <td class="{% if cumulative_return.startswith('-') %}negative{% else %}positive{% endif %}">{{ cumulative_return }}</td>
+        </tr>
+    </table>
+</div>
+
+{% if trades %}
+<div class="card">
+    <h2>📋 交易明细</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>代码</th>
+                    <th>名称</th>
+                    <th>买入日期</th>
+                    <th>买入价</th>
+                    <th>卖出日期</th>
+                    <th>卖出价</th>
+                    <th>卖出原因</th>
+                    <th>收益率</th>
+                    <th>持有天数</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trade in trades %}
+                <tr>
+                    <td>{{ trade.code }}</td>
+                    <td>{{ trade.name }}</td>
+                    <td>{{ trade.buy_date }}</td>
+                    <td>{{ trade.buy_price }}</td>
+                    <td>{{ trade.sell_date }}</td>
+                    <td>{{ trade.sell_price }}</td>
+                    <td>{{ trade.sell_reason }}</td>
+                    <td class="{{ trade.return_class }}">{{ trade.return_pct }}</td>
+                    <td>{{ trade.holding_days }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <h3>暂无交易记录</h3>
+        <p>回测期间未产生符合条件的交易信号</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

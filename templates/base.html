@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}股票日K筛选器{% endblock %}</title>
+    <link rel="stylesheet" href="{% block css_path %}assets/style.css{% endblock %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📈 股票日K筛选器</h1>
+            <p class="date">{% block subtitle %}趋势回调买入策略{% endblock %}</p>
+            <nav class="nav-links">
+                <a href="{% block index_link %}index.html{% endblock %}">今日选股</a>
+                <a href="{% block backtest_link %}backtest.html{% endblock %}">回测报告</a>
+                <a href="{% block history_link %}history/index.html{% endblock %}">历史记录</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>⚠️ 本工具仅供学习研究，不构成投资建议。股市有风险，投资需谨慎。</p>
+        <p>生成时间：{{ generated_at }}</p>
+    </footer>
+</body>
+</html>
